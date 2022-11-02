@@ -10,10 +10,12 @@ from passlib.hash import pbkdf2_sha256 as sha256
 class UserModel(db.Model):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80))
-    password = db.Column(db.String(80))
-    admin_required = db.Column(db.Boolean, default=False)
+    id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
+    email = db.Column(db.String(100), unique=True, index=True, nullable=False)
+    password = db.Column(db.String(80), nullable=False)
+    name = db.Column(db.String(100))
+    messages = db.relationship("Message", back_populates="user", lazy=True, uselist=False)  # One-to-one relationship
+
 
     def __init__(self, username, password):
         self.username = username
@@ -24,12 +26,6 @@ class UserModel(db.Model):
             'id': self.id,
             'username': self.username
         }
-
-    def is_admin(self):
-        aux = False
-        if self.admin_required:
-            aux = True
-        return aux
 
     @classmethod
     def find_by_username(cls, username):
