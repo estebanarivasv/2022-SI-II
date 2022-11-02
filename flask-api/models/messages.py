@@ -1,8 +1,8 @@
 from db import db
 
 
-class Message(db.Model):
-    __tablename__ = "Message"
+class MessageModel(db.Model):
+    __tablename__ = "messages"
 
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     date = db.Column(db.DateTime(timezone=True))

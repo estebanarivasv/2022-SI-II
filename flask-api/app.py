@@ -4,7 +4,7 @@ from flask_jwt_extended import JWTManager
 
 from db import db
 from blacklist import BLACKLIST
-from resources.user import UserRegister, User, UserLogin, UserLogout, TokenRefresh
+from resources.user import UserRegister, User, UserLogin, UserLogout
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
