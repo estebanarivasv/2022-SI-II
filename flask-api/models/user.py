@@ -1,5 +1,36 @@
+from datetime import datetime
+
 from db import db
 from passlib.hash import pbkdf2_sha256 as sha256
+
+
+class Message(db.Model):
+    __tablename__ = 'messages'
+
+    id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
+    date = db.Column(db.DateTime(timezone=True))
+    text = db.Column(db.String(1000))
+    sender = db.Column(db.String(80))
+    receiver = db.Column(db.String(80))
+
+    def __init__(self, text, sender, receiver):
+        self.text = text
+        self.sender = sender
+        self.receiver = receiver
+        self.date = datetime.now()
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def json(self):
+        return {
+            'id': self.id,
+            'date': self.date,
+            'text': self.text,
+            'sender': self.sender,
+            'receiver': self.receiver
+        }
 
 
 class UserModel(db.Model):
@@ -10,8 +41,6 @@ class UserModel(db.Model):
     password = db.Column(db.String(80), nullable=False)
     public_key = db.Column(db.String(240), unique=True, index=True, nullable=False)
     private_key = db.Column(db.String(240), unique=True, index=True, nullable=False)
-    # relacion many to many con la tabla mensajes
-    # messages = db.relationship('MessageModel', backref='users', lazy='dynamic')
 
     def __init__(self, username, password):
         self.username = username
@@ -33,10 +62,6 @@ class UserModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
         db.session.commit()
 
     @staticmethod
