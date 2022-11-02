@@ -1,13 +1,6 @@
-from flask import jsonify
+from Crypto.PublicKey import RSA
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import (
-    create_access_token,
-    create_refresh_token,
-    jwt_required,
-    get_jwt_identity,
-    get_jwt, verify_jwt_in_request
-)
-from six import wraps
+from flask_jwt_extended import (create_access_token, jwt_required, get_jwt)
 
 from models.user import UserModel
 from blacklist import BLACKLIST
@@ -30,6 +23,11 @@ class UserRegister(Resource):
         )
 
         try:
+            # ACA CREAMOS Y GUARDAMOS EN CADA USUARIO, SU CLAVE PUBLICA Y CLAVE PRIVADA
+            new_key = RSA.generate(1024, e=65537)
+            new_user.public_key = new_key.exportKey("PEM")
+            new_user.private_key = new_key.publickey().exportKey("PEM")
+
             new_user.save_to_db()
             return {'message': 'User {} was created'.format(data['username'])}
         except:

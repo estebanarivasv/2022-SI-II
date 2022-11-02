@@ -8,6 +8,8 @@ class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     username = db.Column(db.String(100), unique=True, index=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    public_key = db.Column(db.String(240), unique=True, index=True, nullable=False)
+    private_key = db.Column(db.String(240), unique=True, index=True, nullable=False)
     # relacion many to many con la tabla mensajes
     # messages = db.relationship('MessageModel', backref='users', lazy='dynamic')
 
