@@ -1,8 +1,9 @@
-from main.extensions import db
+from db import db
 
 
 class Message(db.Model):
     __tablename__ = "Message"
+
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     date = db.Column(db.DateTime(timezone=True))
     text = db.Column(db.String(1000))
