@@ -1,6 +1,5 @@
-Flask==2.2.2
-Flask-RESTful==0.3.9
-Flask-SQLAlchemy==3.0.2
-python-dotenv==0.21.0
-Flask-JWT-Extended==4.4.4
-SQLAlchemy==1.4.42
+Flask
+Flask-JWT-extended
+Flask-RESTful
+Flask-SQLAlchemy
+passlib
