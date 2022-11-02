@@ -1,21 +1,46 @@
-from functools import wraps
-
-from flask import jsonify
-from flask_jwt_extended import verify_jwt_in_request, get_jwt
+from datetime import datetime
 
 from db import db
 from passlib.hash import pbkdf2_sha256 as sha256
+
+
+class Message(db.Model):
+    __tablename__ = 'messages'
+
+    id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
+    date = db.Column(db.DateTime(timezone=True))
+    text = db.Column(db.String(1000))
+    sender = db.Column(db.String(80))
+    receiver = db.Column(db.String(80))
+
+    def __init__(self, text, sender, receiver):
+        self.text = text
+        self.sender = sender
+        self.receiver = receiver
+        self.date = datetime.now()
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def json(self):
+        return {
+            'id': self.id,
+            'date': self.date,
+            'text': self.text,
+            'sender': self.sender,
+            'receiver': self.receiver
+        }
 
 
 class UserModel(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
-    email = db.Column(db.String(100), unique=True, index=True, nullable=False)
+    username = db.Column(db.String(100), unique=True, index=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
-    name = db.Column(db.String(100))
-    messages = db.relationship("Message", back_populates="user", lazy=True, uselist=False)  # One-to-one relationship
-
+    public_key = db.Column(db.String(240), unique=True, index=True, nullable=False)
+    private_key = db.Column(db.String(240), unique=True, index=True, nullable=False)
 
     def __init__(self, username, password):
         self.username = username
@@ -39,10 +64,6 @@ class UserModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
     @staticmethod
     def generate_hash(password):
         return sha256.hash(password)
@@ -50,4 +71,3 @@ class UserModel(db.Model):
     @staticmethod
     def verify_hash(password, hash):
         return sha256.verify(password, hash)
-
