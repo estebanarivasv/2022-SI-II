@@ -65,6 +65,7 @@ class UserLogout(Resource):
 
 
 class User(Resource):
+    # TODO: PABLO FRACARO, ESTO ES TUYO.
     @jwt_required()
     def get(self):
         return {'message': 'Aca vamos a devolver el perfil del usuario'}, 200
