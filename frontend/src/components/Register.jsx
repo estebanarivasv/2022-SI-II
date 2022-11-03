@@ -1,6 +1,9 @@
 import React, {useState} from "react";
 import {Form, Button} from "react-bootstrap";
 import "../styles/auth.css";
+import {useNavigate} from "react-router-dom";
+import Cookies from "universal-cookie";
+import axios from "axios";
 
 const Register = () => {
     const [validated, setValidated] = useState({
@@ -8,9 +11,27 @@ const Register = () => {
         password: '',
     });
 
-    function handleSubmit(e) {
+    const navigate = useNavigate();
+    const cookies = new Cookies();
+    cookies.remove("token");
+    cookies.remove("username");
+
+    async function handleSubmit(e) {
         e.preventDefault();
-        console.log(validated)
+        if (!(validated.username === "") && !(validated.password === "")) {
+            await axios.post("http://localhost:5000/register", validated)
+                .then((response) => {
+                    if (response.status === 200) {
+                        navigate("/", { replace: true });
+                        window.location.reload();
+                    }
+                })
+                .catch((err) => {
+                    if (err.request.status !== 0) {
+                        alert("Error");
+                    }
+                });
+        }
     }
 
     function handleChange(e) {
