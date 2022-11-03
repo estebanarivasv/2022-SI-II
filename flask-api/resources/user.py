@@ -1,10 +1,12 @@
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
+from flask import jsonify
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import (create_access_token, jwt_required, get_jwt)
 
 from models.user import UserModel, Message
 from blacklist import BLACKLIST
+from utilities.msg_decrypt import ServerRSA
 
 _user_parser = reqparse.RequestParser()
 _user_parser.add_argument('username', type=str, required=True, help="This field cannot be blank.")
@@ -32,6 +34,7 @@ class UserRegister(Resource):
             new_key = RSA.generate(1024, e=65537)
             new_user.private_key = new_key.exportKey("PEM")
             new_user.public_key = new_key.publickey().exportKey("PEM")
+            new_user.rsa_key = str(new_key)
 
             new_user.save_to_db()
             return {'message': 'User {} was created'.format(data['username'])}
@@ -65,9 +68,10 @@ class UserLogout(Resource):
 
 
 class User(Resource):
+    # TODO: PABLO FRACARO, ESTO ES TUYO.
     @jwt_required()
     def get(self):
-        return {'message': 'Aca vamos a devolver el perfil del usuario'}, 200
+        return {'user': 'Pablo Fracaro'}
 
 
 class UserSendMail(Resource):
