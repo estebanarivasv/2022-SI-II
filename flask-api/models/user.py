@@ -23,6 +23,10 @@ class Message(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    @staticmethod
+    def find_by_receiver(receiver):
+        return Message.query.filter_by(receiver=receiver).all()
+
     def json(self):
         return {
             'id': self.id,
@@ -41,6 +45,7 @@ class UserModel(db.Model):
     password = db.Column(db.String(80), nullable=False)
     public_key = db.Column(db.String(240), unique=True, index=True, nullable=False)
     private_key = db.Column(db.String(240), unique=True, index=True, nullable=False)
+    rsa_key = db.Column(db.String(240), unique=True, index=True, nullable=False)
 
     def __init__(self, username, password):
         self.username = username

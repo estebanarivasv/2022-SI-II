@@ -1,18 +1,23 @@
+import os
+
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from dotenv import load_dotenv
 
 from db import db
 from blacklist import BLACKLIST
 from resources.user import UserRegister, User, UserLogin, UserLogout, UserSendMail
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['PROPAGATE_EXCEPTIONS'] = True
-app.config['JWT_BLACKLIST_ENABLED'] = True
-app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
-app.secret_key = 'gal'  # app.config['JWT_SECRET_KEY']
+load_dotenv()
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DB_URI")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
+app.config['PROPAGATE_EXCEPTIONS'] = os.getenv("PROPAGATE_EXCEPTIONS")
+app.config['JWT_BLACKLIST_ENABLED'] = os.getenv("JWT_BLACKLIST_ENABLED")
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = os.getenv("JWT_BLACKLIST_TOKEN_CHECKS")
+app.secret_key = os.getenv("JWT_SECRET_KEY")
 
 jwt = JWTManager(app)
 
@@ -75,7 +80,6 @@ api.add_resource(UserLogout, '/logout')
 api.add_resource(User, '/profile')
 api.add_resource(UserSendMail, '/sendmail')
 
-
 if __name__ == '__main__':
     db.init_app(app)
-    app.run(port=5000, debug=True)
+    app.run(port=os.getenv("PORT"), debug=True)
