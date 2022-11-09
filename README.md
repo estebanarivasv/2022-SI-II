@@ -1,5 +1,4 @@
-
-#### Project Files
+### Project Files
 
 - app.py - the main program.
 - db.py - importing and creating SQLAlchemy object.
@@ -8,6 +7,9 @@
 - models(folder) - OOP (Users).
 - resource(folder) - Resources (Users).
 
+#### Requirements
+- Python 3.8
+- node.js v16.18.1
 
 #### Installation
 
@@ -17,6 +19,8 @@ source venv/bin/activate
 pip3 install -r requirements.txt
 python3 app.py
 ```
+
+
 
 #### Postman
 
