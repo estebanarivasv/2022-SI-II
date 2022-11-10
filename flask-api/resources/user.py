@@ -1,5 +1,6 @@
 from Crypto.Cipher import PKCS1_OAEP, AES
 from Crypto.PublicKey import RSA
+from flask import jsonify
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import (create_access_token, jwt_required, get_jwt)
 
@@ -7,6 +8,7 @@ from utilities.AES_encrypter import AESEncryption
 
 from models.user import UserModel, Message
 from blacklist import BLACKLIST
+from utilities.msg_decrypt import ServerRSA
 
 _user_parser = reqparse.RequestParser()
 _user_parser.add_argument('username', type=str, required=True, help="This field cannot be blank.")
@@ -30,7 +32,6 @@ class UserRegister(Resource):
         )
 
         try:
-            # ACA CREAMOS Y GUARDAMOS EN CADA USUARIO, SU CLAVE PUBLICA Y CLAVE PRIVADA
             new_key = RSA.generate(1024, e=65537)
             aes_encrypt = AESEncryption()
 
@@ -65,7 +66,7 @@ class UserLogin(Resource):
 class UserLogout(Resource):
     @jwt_required()
     def post(self):
-        jti = get_jwt()['jti']  # jti is "JWT ID"
+        jti = get_jwt()['jti']
         BLACKLIST.add(jti)
         return {'Message': 'Successfully logged out.'}, 200
 
@@ -113,12 +114,7 @@ class UserSendMail(Resource):
             return {'message': 'User {} doesn\'t exist'.format(data['receiver'])}
 
         cipher_encrypt = PKCS1_OAEP.new(RSA.importKey(user_receiver.public_key))
-
-        # cipher_decrypt = PKCS1_OAEP.new(RSA.importKey(user_receiver.private_key)) DECRYPT
-
         encrypted_text = cipher_encrypt.encrypt(data['text'].encode('utf-8'))
-
-        # print("test2: ", cipher_decrypt.decrypt(encrypted_text)) DECRYPT
 
         new_msg = Message(
             text=str(encrypted_text),

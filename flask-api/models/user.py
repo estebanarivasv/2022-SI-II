@@ -7,7 +7,7 @@ from passlib.hash import pbkdf2_sha256 as sha256
 class Message(db.Model):
     __tablename__ = 'messages'
 
-    id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
+    id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime(timezone=True))
     text = db.Column(db.String(1000))
     sender = db.Column(db.String(80))
@@ -40,7 +40,7 @@ class Message(db.Model):
 class UserModel(db.Model):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, index=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     public_key = db.Column(db.String(240), unique=True, index=True, nullable=False)
