@@ -1,4 +1,4 @@
-from Crypto.Cipher import PKCS1_OAEP
+from Crypto.Cipher import PKCS1_OAEP, AES
 from Crypto.PublicKey import RSA
 from flask import jsonify
 from flask_restful import Resource, reqparse
@@ -68,10 +68,31 @@ class UserLogout(Resource):
 
 
 class User(Resource):
-    # TODO: PABLO FRACARO, ESTO ES TUYO.
     @jwt_required()
     def get(self):
-        return {'user': 'Pablo Fracaro'}
+        user_profile = UserModel.find_by_username(get_jwt()['sub'])
+        message_to_user = Message.find_by_receiver(get_jwt()['sub'])
+
+        aes_decrypt = AESEncryption()
+        private_key_decrypt = aes_decrypt.decrypt(user_profile.private_key)
+
+        decrypter = ServerRSA(user_profile.rsa_key, private_key_decrypt)
+        decrypter.cipher_decrypt = PKCS1_OAEP.new(RSA.importKey(decrypter.private_key_server))
+
+        if user_profile:
+            messages = [{
+                'id': message.id,
+                'date': message.date,
+                'sender': message.sender,
+                'text': decrypter.decrypt_message(message.text)
+            } for message in message_to_user]
+
+            return jsonify({
+                'user': user_profile.json(),
+                'messages': messages
+            })
+
+        return {'message': 'User not found'}, 404
 
 
 class UserSendMail(Resource):
