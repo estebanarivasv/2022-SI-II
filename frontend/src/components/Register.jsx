@@ -53,7 +53,7 @@ const Register = () => {
                 <h1>Sign Up</h1>
                 <section className="auth-groups">
                     <Form.Group className="mb-3" controlId="username">
-                        <Form.Label>Email address</Form.Label>
+                        <Form.Label>Username</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Enter username"

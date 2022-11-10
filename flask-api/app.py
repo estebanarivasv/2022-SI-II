@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 from db import db
 from blacklist import BLACKLIST
@@ -11,6 +12,8 @@ from resources.user import UserRegister, User, UserLogin, UserLogout, UserSendMa
 
 app = Flask(__name__)
 load_dotenv()
+
+CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DB_URI")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
